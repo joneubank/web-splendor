@@ -4,7 +4,7 @@ body {
     font-size: 0px;
 }
 
-.white  { background-color: #f2f2f2; }
+.white  { background-color: #fff; }
 .red    { background-color: #c33; }
 .green  { background-color: #3c3; }
 .blue   { background-color: #33c; }
@@ -55,7 +55,7 @@ body {
 }
 
 .development .costs {
-    background-color: #fff;
+    background-color: #eee;
     /*height: 100%;*/
     width: 250px;
     display: inline-block;
