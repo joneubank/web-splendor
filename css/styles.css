@@ -1,9 +1,8 @@
 body {
-    padding: 1em;
-    background-color: #fff;
-    font-size: 0px;
+    background-color: #67c;
 }
 
+.gold   { background-color: #ee3;}
 .white  { background-color: #fff; }
 .red    { background-color: #c33; }
 .green  { background-color: #3c3; }
@@ -12,15 +11,140 @@ body {
 
 .circle { -moz-border-radius: 50%; -webkit-border-radius: 50%; }
 
+#splendor-wrapper {
+    font-size: 0px;
+}
+
+
+/* ===================
+        TOKENS
+=================== */
+#tokens {
+    margin:0px auto;
+    width: 600px;
+}
+
+.token-holder {
+    display: inline-block;
+    padding: 0px;
+}
+
+.token {
+    width: 30px;
+    height: 62px;
+    margin: 8px;
+    padding: 9px 25px;
+    border: 2px solid #000;
+
+    cursor: pointer;
+}
+
+.token:hover {
+    -moz-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.8);
+    -webkit-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.8);
+}
+
+.token span {
+    -webkit-text-stroke: 1px black;
+    font-size: 55px;
+    font-weight: bold;
+    color: #fff;
+}
+
 #market {
     display: block;
     padding: 1em;
     width: 1050px;
+    margin: 0px auto;
+}
+
+
+/* ====================
+        NOBLES
+==================== */
+#nobles {
+    text-align: center;
+}
+
+.noble {
+    display: inline-block;
+    width: 180px;
+    height: 75px;
+    margin: 10px;
+
+    background: #aaa;
+
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+
+    border: 2px solid #000;
+
+    cursor:pointer;
+}
+.noble:hover {
+    -moz-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.8);
+    -webkit-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.8);
+}
+
+.noble .cost {
+    display: inline-block;
+    height: 45px;
+    padding: 15px 0px;
+}
+
+.noble.two-color .cost{
+    width: 90px;
+}
+.noble.three-color .cost{
+    width: 60px;
+}
+
+.noble .cost span {
+    color: white;
+    -webkit-text-stroke: 1px black;
+    font-size: 38px;
+}
+
+.noble .cost:first-child {
+    -moz-border-radius: 8px 0px 0px 8px;
+    -webkit-border-radius: 8px 0px 0px 8px;
+}
+
+.noble .cost:last-child {
+    -moz-border-radius: 0px 8px 8px 0px;
+    -webkit-border-radius: 0px 8px 8px 0px;
+}
+
+/* ====================
+    DEVELOPMENTS
+==================== */
+
+#levels-wrapper {
+    margin-top: 20px;
+    text-align: center;
 }
 
 .market-level {
-    width: 350px;
     display: inline-block;
+    width:304px;
+    padding: 0px;
+    margin: 0px 10px;
+    text-align: left;
+}
+
+.deck {
+    text-align: center;
+    background-color: #333;
+}
+
+.deck span {
+    color: white;
+    -webkit-text-stroke: 1px black;
+    font-size: 38px;
+}
+
+.deck span span {
+    font-weight: bold;
 }
 
 .development {
@@ -29,7 +153,7 @@ body {
     height: 50px;
     width: 300px;
 
-    margin: 0 15px 15px 0;
+    margin: 0 8px 15px 8px;
 
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
@@ -37,31 +161,28 @@ body {
     border: 2px solid #000;
 
     position: relative;
-    z-index: 2;
 
     cursor: pointer;
 }
 
 .development:hover {
-    top: -1px;
-    left:-1px;
-    -moz-box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.5);
-    -webkit-box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.8);
+    -webkit-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.8);
 }
 
 .development.selected {
-    -moz-box-shadow: 2px 2px 5px 2px rgba(70, 180, 200, 0.5);
-    -webkit-box-shadow: 2px 2px 5px 2px rgba(70, 180, 200, 0.5);
+    -moz-box-shadow: 0px 0px 10px 2px rgba(70, 180, 200, 0.8);
+    -webkit-box-shadow: 0px 0px 10px 2px rgba(70, 180, 200, 0.8);
 }
 
 .development .costs {
-    background-color: #eee;
+    background-color: #aaa;
     /*height: 100%;*/
     width: 250px;
     display: inline-block;
 
-    -moz-border-radius: 10px 0px 0px 10px;
-    -webkit-border-radius: 10px 0px 0px 10px;
+    -moz-border-radius: 8px 0px 0px 8px;
+    -webkit-border-radius: 8px 0px 0px 8px;
 
     box-shadow: inset -12px 0 12px -12px rgba(0,0,0,0.4);
 }
@@ -72,8 +193,8 @@ body {
     display: inline-block;
 
     margin: 5px;
-    -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-    -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.5);
 
     text-align: center;
 }
@@ -86,7 +207,6 @@ body {
     color: white;
     -webkit-text-stroke: 1px black;
     font-size: 32px;
-
 }
 
 .development .prestige {

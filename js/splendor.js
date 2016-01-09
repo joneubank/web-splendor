@@ -44,6 +44,63 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
     };
 
     /*
+        cost is an array of length 5 with the number of gems (permanent tokens)
+            required to earn the Noble
+        All Nobles give 3 points
+    */
+    game.Noble = function(cost)
+    {
+        var colors = 0;
+        for(var i = 0; i < 5; i++)
+        {
+            if(cost[i] > 0)
+            {
+                colors += 1;
+            }
+        }
+
+        return {
+            getCost: function()
+            {
+                return [].concat(cost);
+            },
+
+            buildDom: function()
+            {
+                /*
+                <div class="noble three-color">
+                    <div class="cost white">    <span>3</span></div>
+                    <div class="cost red">      <span>3</span></div>
+                    <div class="cost black">    <span>3</span></div>
+                </div>
+                */
+
+                var root = document.createElement('div');
+                var colorsClassName = colors === 2 ? 'two-color' : 'three-color';
+                root.className = "noble " + colorsClassName;
+
+                //loop for each color
+                for(var i = 0; i < 5; i++)
+                {
+                    if(cost[i] > 0)
+                    {
+                        var costDiv = document.createElement('div');
+                        costDiv.className = "cost " + game.color(i);
+                        root.appendChild(costDiv);
+
+                        var costSpan = document.createElement('span');
+                        costSpan.innerText = cost[i];
+                        costDiv.appendChild(costSpan);
+                    }
+                }
+
+                return root;
+            }
+        }
+    }
+
+
+    /*
         reward is array index 0-4
         points is number of prestige points
         cost is an array of length 5 with the number of tokens required to
@@ -120,8 +177,11 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
     game.Player = function()
     {
         var tokens  = [0, 0, 0, 0, 0];
+        var gold = 0;
         var gems    = [0, 0, 0, 0, 0];
         var points  = 0;
+
+        var heldCard = null;
 
         return {
             getPoints: function()
@@ -398,26 +458,47 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
         game.Development(GREEN,5,[0,0,0,7,3])
     ];
 
+    game.decks.nobles = [
+        /*
+        0 3 3 3 0
+        3 3 0 0 3
+        4 0 0 0 4
+        4 4 0 0 0
+        0 4 4 0 0
+        3 3 3 0 0
+        3 0 0 3 3
+        0 0 3 3 3
+        0 0 0 4 4
+        0 0 4 4 0
+        */
+        game.Noble([0, 3, 3, 3, 0]),
+        game.Noble([3, 3, 0, 0, 3]),
+        game.Noble([4, 0, 0, 0, 4]),
+        game.Noble([4, 4, 0, 0, 0]),
+        game.Noble([0, 4, 4, 0, 0]),
+        game.Noble([3, 3, 3, 0, 0]),
+        game.Noble([3, 0, 0, 3, 0]),
+        game.Noble([0, 0, 3, 3, 3]),
+        game.Noble([0, 0, 0, 4, 3]),
+        game.Noble([0, 0, 4, 4, 4])
+    ];
+
     game.create = function(numPlayers)
     {
         var output = {};
 
-        var players = [];
-        for(var i = 0; i < numPlayers; i++)
-        {
-            players.push(game.Player());
-        }
-
         // make copies of all decks to play with, then shuffle them
         output.decks = {};
-        output.decks.developments = []
+        output.decks.developments = [];
         output.decks.developments[0] = [].concat(game.decks.level1);
         output.decks.developments[1] = [].concat(game.decks.level2);
         output.decks.developments[2] = [].concat(game.decks.level3);
+        output.decks.nobles = [].concat(game.decks.nobles);
 
         game.shuffle(output.decks.developments[0]);
         game.shuffle(output.decks.developments[1]);
         game.shuffle(output.decks.developments[2]);
+        game.shuffle(output.decks.nobles);
 
         // get the dom elements for the game
         output.dom = {};
@@ -426,18 +507,98 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
         output.dom.developments[1] = document.getElementById("level-2");
         output.dom.developments[2] = document.getElementById("level-3");
 
-        output.drawDevelopment = function(level)
+        output.dom.decksizes = [];
+        output.dom.decksizes[0] = document.getElementById("level-1-decksize");
+        output.dom.decksizes[1] = document.getElementById("level-2-decksize");
+        output.dom.decksizes[2] = document.getElementById("level-3-decksize");
+
+        output.dom.nobles = document.getElementById("nobles");
+
+        output.dom.tokenCounts = [
+            document.getElementById("tokens-white"),
+            document.getElementById("tokens-blue"),
+            document.getElementById("tokens-green"),
+            document.getElementById("tokens-red"),
+            document.getElementById("tokens-black")
+        ];
+
+        output.dom.goldCount = document.getElementById("tokens-gold");
+
+        var drawDevelopment = function(level)
         {
             var card = output.decks.developments[level].pop();
-            this.dom.developments[level].appendChild(card.buildDom());
+            output.dom.developments[level].appendChild(card.buildDom());
+
+            var deckId = "level-" + (level+1) + "-decksize";
+            output.dom.decksizes[level].innerText = output.decks.developments[level].length;
         };
+
+        var drawNoble = function()
+        {
+            var card = output.decks.nobles.pop();
+            output.dom.nobles.appendChild(card.buildDom());
+        };
+
+        var takeToken = function(index)
+        {
+            tokens[index] -= 1;
+            output.dom.tokenCounts[index].innerText = tokens[index];
+        };
+
+        var addToken = function(index)
+        {
+            tokens[index] += 1;
+            output.dom.tokenCounts[index].innerText = tokens[index];
+        };
+
+        var takeGold = function(index)
+        {
+            gold -= 1;
+            output.dom.goldCounts = gold;
+        };
+
+        var addGold = function(index)
+        {
+            gold += 1;
+            output.dom.goldCounts = gold;
+        };
+
+
+
+        /*
+            Setup Game Initial State
+        */
+        var players = [];
+        for(var i = 0; i < numPlayers; i++)
+        {
+            players.push(game.Player());
+        }
+
+        //Tokens setup
+        var tokenMax = numPlayers+2;
+        var tokens = [tokenMax, tokenMax, tokenMax, tokenMax, tokenMax];
+        for(var i = 0; i < 5; i++)
+        {
+             output.dom.tokenCounts[i].innerText = tokens[i];
+        }
+        var gold = 5;
+        output.dom.goldCount.innerText = gold;
+
+
+        //setup nobles
+        var nobles = [];
+        for(var i = 0; i < numPlayers + 1; i++)
+        {
+            nobles.push(drawNoble());
+
+        }
 
         //draw initial cards
         for(var i = 0; i < 4; i++)
         {
-            output.drawDevelopment(0);
-            output.drawDevelopment(1);
-            output.drawDevelopment(2);
+            drawDevelopment(0);
+            drawDevelopment(1);
+            drawDevelopment(2);
         }
 
         return output;
