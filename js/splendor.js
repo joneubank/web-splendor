@@ -31,6 +31,7 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
     var GREEN = 2;
     var RED   = 3;
     var BLACK = 4;
+    var GOLD  = 5;
 
     game.color = function(index)
     {
@@ -40,6 +41,7 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
         options[GREEN] = 'green';
         options[RED]   = 'red';
         options[BLACK] = 'black';
+        options[GOLD] = 'gold';
         return options[index];
     };
 
@@ -77,7 +79,8 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
 
                 var root = document.createElement('div');
                 var colorsClassName = colors === 2 ? 'two-color' : 'three-color';
-                root.className = "noble " + colorsClassName;
+                root.classList.add('noble');
+                root.classList.add(colorsClassName);
 
                 //loop for each color
                 for(var i = 0; i < 5; i++)
@@ -85,7 +88,8 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
                     if(cost[i] > 0)
                     {
                         var costDiv = document.createElement('div');
-                        costDiv.className = "cost " + game.color(i);
+                        costDiv.classList.add('cost');
+                        costDiv.classList.add(game.color(i));
                         root.appendChild(costDiv);
 
                         var costSpan = document.createElement('span');
@@ -96,8 +100,8 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
 
                 return root;
             }
-        }
-    }
+        };
+    };
 
 
     /*
@@ -138,28 +142,29 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
                 */
 
                 var output = document.createElement('div');
-                output.className = "development " + game.color(reward);
+                output.className = 'development ' + game.color(reward);
 
                 var costs = document.createElement('div');
-                costs.className = "costs";
+                costs.className = 'costs';
                 output.appendChild(costs);
 
                 for(var i = 0; i < 5; i++)
                 {
                     var costDiv = document.createElement('div');
-                    costDiv.className = "circle " + game.color(i);
+                    costDiv.classList.add('circle');
+                    costDiv.classList.add(game.color(i));
                     costs.appendChild(costDiv);
                     if(cost[i] === 0)
                     {
-                        costDiv.className = costDiv.className + " nocost";
+                        costDiv.classList.add('nocost');
                     }
-                        var costValue = document.createElement('span');
-                        costValue.innerText = cost[i];
-                        costDiv.appendChild(costValue);
+                    var costValue = document.createElement('span');
+                    costValue.innerText = cost[i];
+                    costDiv.appendChild(costValue);
                 }
 
                 var pointsDiv = document.createElement('div');
-                pointsDiv.className = "prestige";
+                pointsDiv.className = 'prestige';
                 output.appendChild(pointsDiv);
                 if(points > 0)
                 {
@@ -174,18 +179,116 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
         };
     };
 
-    game.Player = function()
+    game.Player = function(playerContainer, playerNumber)
     {
-        var tokens  = [0, 0, 0, 0, 0];
-        var gold = 0;
+        var id = playerNumber;
+        var tokens  = [0, 0, 0, 0, 0, 0];
         var gems    = [0, 0, 0, 0, 0];
         var points  = 0;
 
-        var heldCard = null;
+        var heldCards = [];
+
+        var domObject = buildDom();
+        var domElement = domObject.root;
+        // var reservedCardHolder =
+
+        function buildDom() {
+            /*
+            <div class="player" data-player="1">
+                <div class="player-left">
+                    <div class="player-points">5</div>
+                    <div class="player-reserved">
+                        <div class="player-reserved-card level-2"></div>
+                        <div class="player-reserved-card level-1"></div>
+                        <div class="player-reserved-card level-3"></div>
+                    </div>
+                </div>
+                <div class="player-hand">
+                    <div class="player-hand-color">
+                        <div class="player-hand-tokens white"></div>
+                        <div class="player-hand-gems white"></div>
+                    </div>
+                    <div class="player-hand-color">
+                        <div class="player-hand-tokens blue"></div>
+                        <div class="player-hand-gems blue"></div>
+                    </div>
+                    <div class="player-hand-color">
+                        <div class="player-hand-tokens green"></div>
+                        <div class="player-hand-gems green"></div>
+                    </div>
+                    <div class="player-hand-color">
+                        <div class="player-hand-tokens red"></div>
+                        <div class="player-hand-gems red"></div>
+                    </div>
+                    <div class="player-hand-color">
+                        <div class="player-hand-tokens black"></div>
+                        <div class="player-hand-gems black"></div>
+                    </div>
+                    <div class="player-hand-color">
+                        <div class="player-hand-tokens gold"></div>
+                    </div>
+                </div>
+            </div>
+            */
+
+
+            //build dom into object where output.root is the root of the element
+            var output = {};
+
+            var root = document.createElement('div');
+            root.classList.add('player');
+            output.root = root;
+
+            var playerLeft = document.createElement('div');
+            root.appendChild(playerLeft);
+            playerLeft.classList.add('player-left');
+
+            var points = document.createElement('div');
+            playerLeft.appendChild(points);
+            output.points = points;
+            points.classList.add('player-points');
+
+            var reservedCardWrapper = document.createElement('div');
+            playerLeft.appendChild(reservedCardWrapper);
+            output.reserved = reservedCardWrapper;
+            reservedCardWrapper.classList.add('player-reserved');
+
+
+            var hand = document.createElement('div');
+            root.appendChild(hand);
+            hand.classList.add('player-hand');
+
+            output.colors = [];
+            for(var i = 0; i < 6; i++) {
+                var handColorContents = {};
+
+                var colorRoot = document.createElement('div');
+                colorRoot.classList.add('player-hand-color');
+                hand.appendChild(colorRoot);
+
+                var tokens = document.createElement('div');
+                colorRoot.appendChild(tokens);
+                handColorContents.tokens = tokens;
+                tokens.classList.add('player-hand-tokens');
+                tokens.classList.add(game.color(i));
+
+                var gems = document.createElement('div');
+                colorRoot.appendChild(gems);
+                handColorContents.gems = gems;
+                gems.classList.add('player-hand-gems');
+                gems.classList.add(game.color(i));
+
+                output.colors[i] = handColorContents;
+                hand.appendChild(colorRoot);
+            }
+
+            return output;
+        }
+
+
 
         return {
-            getPoints: function()
-            {
+            getPoints: function() {
                 return this.points;
             },
 
@@ -208,8 +311,7 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
 
             },
 
-            canBuyDevelopment: function(development)
-            {
+            canBuyDevelopment: function(development) {
                 var output = true;
 
                 //check each token level
@@ -223,13 +325,41 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
                 }
 
                 return output;
+            },
+
+            getDom: function() {
+                return domElement;
+            },
+
+
+            updateDom: function {
+            //points
+            domObject.points.innerHTML = points;
+
+            //tokens
+            for(var i =0; i < 6; i++ ) {
+                if(tokens[i] > 0) {
+                    domObject.colors[i].tokens.innerHTML = tokens[i];
+                }
             }
+
+            //gems
+            for(var i =0; i < 5; i++ ) {
+                if(gems[i] > 0) {
+                    domObject.colors[i].gems.innerHTML = gems[i];
+                }
+            }
+        }
+
+
+
+
 
         };
     };
 
-    game.decks = {};
-    game.decks.level1 = [
+    var masterDecks = {};
+    masterDecks.level1 = [
         /* level 1 white
         white       1u+1g+1r+1k         1   1   1   1
                     1u+2g+1r+1k         1   2   1   1
@@ -267,6 +397,7 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
             game.Development(BLUE ,0,[0,0,0,0,3]),
             game.Development(BLUE ,1,[0,0,0,4,0]),
         /* level 1 green
+            points      wh  bu  gr  re  bk
             0           1   1       1   1
             0           1   1       1   2
             0               1       2   2
@@ -286,6 +417,7 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
             game.Development(GREEN ,1,[0,0,0,0,4]),
 
         /*level 1 red
+            points      wh  bu  gr  re  bk
             0           1   1   1       1
             0           2   1   1       1
             0           2       1       2
@@ -305,6 +437,7 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
             game.Development(RED ,1,[4,0,0,0,0]),
 
         /* black
+            points      wh  bu  gr  re  bk
             0           1   1   1   1
             0           1   2   1   1
             0           2   2       1
@@ -324,8 +457,9 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
             game.Development(BLACK ,1,[0,4,0,0,0])
     ];
 
-    game.decks.level2 = [
+    masterDecks.level2 = [
         /* level 2 white
+            points      wh  bu  gr  re  bk
             1                   3   2   2
             1           2   3       3
             2                   1   4   2
@@ -341,6 +475,7 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
         game.Development(WHITE,3,[6,0,0,0,0]),
 
         /* level 2 blue
+            points      wh  bu  gr  re  bk
             1               2   2   3
             1               2   3       3
             2           5   3
@@ -356,6 +491,7 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
         game.Development(BLUE,3,[0,6,0,0,0]),
 
         /* level 2 green
+            points      wh  bu  gr  re  bk
             1           3       2   3
             1           2   3           2
             2           4   2           1
@@ -371,6 +507,7 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
         game.Development(GREEN,3,[0,0,6,0,0]),
 
         /* level 2 red
+            points      wh  bu  gr  re  bk
             1           2           2   3
             1               3       2   3
             2           1   4   2
@@ -386,6 +523,7 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
         game.Development(RED,3,[0,0,0,6,0]),
 
         /* level 2 black
+            points      wh  bu  gr  re  bk
             1           3   2   2
             1           3       3       2
             2               1   4   2
@@ -401,8 +539,9 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
         game.Development(BLACK,3,[0,0,0,0,6])
     ];
 
-    game.decks.level3 = [
+    masterDecks.level3 = [
         /* level 3 white
+            points      wh  bu  gr  re  bk
             3               3   3   5   3
             4                           7
             4           3           3   6
@@ -414,6 +553,7 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
         game.Development(WHITE,5,[3,0,0,0,7]),
 
         /* level 3 blue
+            points      wh  bu  gr  re  bk
             3           3       3   3   5
             4           7
             4           6   3           3
@@ -425,6 +565,7 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
         game.Development(BLUE,5,[7,3,0,0,0]),
 
         /* level 3 green
+            points      wh  bu  gr  re  bk
             3           5   3       3   3
             4               7
             4           3   6   3
@@ -436,30 +577,33 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
         game.Development(GREEN,5,[0,7,3,0,0]),
 
         /* level 3 red
+            points      wh  bu  gr  re  bk
             3           3   5   3       3
             4                   7
             4               3   6   3
             5                   7   3
         */
-        game.Development(GREEN,3,[3,5,3,0,3]),
-        game.Development(GREEN,4,[0,0,7,0,0]),
-        game.Development(GREEN,4,[0,3,6,3,0]),
-        game.Development(GREEN,5,[0,0,7,3,0]),
+        game.Development(RED,3,[3,5,3,0,3]),
+        game.Development(RED,4,[0,0,7,0,0]),
+        game.Development(RED,4,[0,3,6,3,0]),
+        game.Development(RED,5,[0,0,7,3,0]),
 
         /* level 3 black
+            points      wh  bu  gr  re  bk
             3           3   3   5   3
             4                       7
             4                   3   6   3
             5                       7   3
         */
-        game.Development(GREEN,3,[3,3,5,3,0]),
-        game.Development(GREEN,4,[0,0,0,7,0]),
-        game.Development(GREEN,4,[0,0,3,6,3]),
-        game.Development(GREEN,5,[0,0,0,7,3])
+        game.Development(BLACK,3,[3,3,5,3,0]),
+        game.Development(BLACK,4,[0,0,0,7,0]),
+        game.Development(BLACK,4,[0,0,3,6,3]),
+        game.Development(BLACK,5,[0,0,0,7,3])
     ];
 
-    game.decks.nobles = [
+    masterDecks.nobles = [
         /*
+        w b g r bk
         0 3 3 3 0
         3 3 0 0 3
         4 0 0 0 4
@@ -483,99 +627,144 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
         game.Noble([0, 0, 4, 4, 4])
     ];
 
+
     game.create = function(numPlayers)
     {
+        /*
+         *  Output
+         * TODO: List of public members provided in created game object
+         */
         var output = {};
+        var decks = {};
+        var turn = Math.floor(Math.random()*numPlayers);
 
+        var players = [];
+        var playerWrapper = document.getElementById('players-wrapper');
+
+        //
+
+        /*
+            Private Methods:
+        */
+        function drawDevelopment(level, position)
+        {
+            var card = decks.developments[level].pop();
+            output.dom.developments[level].appendChild(card.buildDom());
+
+            var deckId = 'level-' + (level+1) + '-decksize';
+            output.dom.decksizes[level].innerText = decks.developments[level].length;
+        }
+
+        function drawNoble()
+        {
+            var card = decks.nobles.pop();
+            output.dom.nobles.appendChild(card.buildDom());
+        }
+
+        function takeToken(index)
+        {
+            tokens[index] -= 1;
+            output.dom.tokenCounts[index].innerText = tokens[index];
+        }
+
+        function addToken(index) {
+            tokens[index] += 1;
+            output.dom.tokenCounts[index].innerText = tokens[index];
+        }
+
+        function takeGold() {
+            gold -= 1;
+            output.dom.goldCounts = gold;
+        }
+
+        function addGold() {
+            gold += 1;
+            output.dom.goldCounts = gold;
+        }
+
+        function nextTurn() {
+            //update active player turn
+            players[turn].endTurn();
+            turn += 1;
+            if(turn >= numPlayers) {
+                turn = 0;
+            }
+
+            players[turn].startTurn();
+
+
+
+        }
+
+        /*
+            Decks Setup
+        */
         // make copies of all decks to play with, then shuffle them
-        output.decks = {};
-        output.decks.developments = [];
-        output.decks.developments[0] = [].concat(game.decks.level1);
-        output.decks.developments[1] = [].concat(game.decks.level2);
-        output.decks.developments[2] = [].concat(game.decks.level3);
-        output.decks.nobles = [].concat(game.decks.nobles);
+        decks.developments = [];
+        decks.developments[0] = [].concat(masterDecks.level1);
+        decks.developments[1] = [].concat(masterDecks.level2);
+        decks.developments[2] = [].concat(masterDecks.level3);
+        decks.nobles = [].concat(masterDecks.nobles);
 
-        game.shuffle(output.decks.developments[0]);
-        game.shuffle(output.decks.developments[1]);
-        game.shuffle(output.decks.developments[2]);
-        game.shuffle(output.decks.nobles);
+        game.shuffle(decks.developments[0]);
+        game.shuffle(decks.developments[1]);
+        game.shuffle(decks.developments[2]);
+        game.shuffle(decks.nobles);
 
         // get the dom elements for the game
         output.dom = {};
         output.dom.developments = [];
-        output.dom.developments[0] = document.getElementById("level-1");
-        output.dom.developments[1] = document.getElementById("level-2");
-        output.dom.developments[2] = document.getElementById("level-3");
+        output.dom.developments[0] = document.getElementById('level-1');
+        output.dom.developments[1] = document.getElementById('level-2');
+        output.dom.developments[2] = document.getElementById('level-3');
 
         output.dom.decksizes = [];
-        output.dom.decksizes[0] = document.getElementById("level-1-decksize");
-        output.dom.decksizes[1] = document.getElementById("level-2-decksize");
-        output.dom.decksizes[2] = document.getElementById("level-3-decksize");
+        output.dom.decksizes[0] = document.getElementById('level-1-decksize');
+        output.dom.decksizes[1] = document.getElementById('level-2-decksize');
+        output.dom.decksizes[2] = document.getElementById('level-3-decksize');
 
-        output.dom.nobles = document.getElementById("nobles");
+        output.dom.nobles = document.getElementById('nobles');
 
         output.dom.tokenCounts = [
-            document.getElementById("tokens-white"),
-            document.getElementById("tokens-blue"),
-            document.getElementById("tokens-green"),
-            document.getElementById("tokens-red"),
-            document.getElementById("tokens-black")
+            document.getElementById('tokens-white'),
+            document.getElementById('tokens-blue'),
+            document.getElementById('tokens-green'),
+            document.getElementById('tokens-red'),
+            document.getElementById('tokens-black')
         ];
 
-        output.dom.goldCount = document.getElementById("tokens-gold");
-
-        var drawDevelopment = function(level)
-        {
-            var card = output.decks.developments[level].pop();
-            output.dom.developments[level].appendChild(card.buildDom());
-
-            var deckId = "level-" + (level+1) + "-decksize";
-            output.dom.decksizes[level].innerText = output.decks.developments[level].length;
-        };
-
-        var drawNoble = function()
-        {
-            var card = output.decks.nobles.pop();
-            output.dom.nobles.appendChild(card.buildDom());
-        };
-
-        var takeToken = function(index)
-        {
-            tokens[index] -= 1;
-            output.dom.tokenCounts[index].innerText = tokens[index];
-        };
-
-        var addToken = function(index)
-        {
-            tokens[index] += 1;
-            output.dom.tokenCounts[index].innerText = tokens[index];
-        };
-
-        var takeGold = function(index)
-        {
-            gold -= 1;
-            output.dom.goldCounts = gold;
-        };
-
-        var addGold = function(index)
-        {
-            gold += 1;
-            output.dom.goldCounts = gold;
-        };
-
-
+        output.dom.goldCount = document.getElementById('tokens-gold');
 
         /*
             Setup Game Initial State
         */
-        var players = [];
+
         for(var i = 0; i < numPlayers; i++)
         {
-            players.push(game.Player());
+            var nextPlayer = game.Player();
+            players.push(nextPlayer);
+
+            playerWrapper.appendChild(nextPlayer.getDom());
+            output.dom.players=playerWrapper;
+
+            nextPlayer.updateDom();
         }
 
         //Tokens setup
-        var tokenMax = numPlayers+2;
+        var tokenMax;
+        switch(numPlayers)
+        {
+            case 3:
+                tokenMax = 5;
+                break;
+            case 2:
+                tokenMax = 4;
+                break;
+            case 4:
+            default:
+                tokenMax = 7;
+        }
+
         var tokens = [tokenMax, tokenMax, tokenMax, tokenMax, tokenMax];
         for(var i = 0; i < 5; i++)
         {
@@ -607,4 +796,3 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
     return game;
 
 })();
-
