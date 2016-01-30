@@ -306,6 +306,7 @@ body {
 }
 
 .player {
+    position: relative;
     text-align: left;
     margin: 0px 5px;
     display: inline-block;
@@ -319,6 +320,23 @@ body {
     border: 2px solid #000;
 
     background-color: #888;
+}
+
+.player1token {
+    position: absolute;
+    left: 278px;
+    top: 3px;
+
+    width:15px;
+    height:15px;
+    background-color: #333;
+    color: #fff;
+
+    border: 2px solid #ee3;
+    border-radius: 4px;
+
+    font-size:13px;
+    text-align: center
 }
 
 .player.turn {
@@ -335,8 +353,7 @@ body {
     width: 50px;
 
     box-shadow: 0px 0 5px 1px rgba(0,0,0,0.4);
-    -moz-border-radius: 8px;
-    -webkit-border-radius: 8px;
+    border-radius: 8px;
 
     background-color: white;
     text-align: center;

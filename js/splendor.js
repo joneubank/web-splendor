@@ -179,8 +179,11 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
         };
     };
 
-    game.Player = function(playerContainer, playerNumber)
+    game.Player = function(playerNumber, isFirst)
     {
+        //explicitly make isFirst false if not defined
+        isFirst = isFirst !== undefined ? isFirst : false;
+
         var id = playerNumber;
         var tokens  = [0, 0, 0, 0, 0, 0];
         var gems    = [0, 0, 0, 0, 0];
@@ -195,6 +198,7 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
         function buildDom() {
             /*
             <div class="player" data-player="1">
+                <div id="player1">1</div> <!-- optional, only for first player -->
                 <div class="player-left">
                     <div class="player-points">5</div>
                     <div class="player-reserved">
@@ -238,6 +242,15 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
             var root = document.createElement('div');
             root.classList.add('player');
             output.root = root;
+
+            if(isFirst)
+            {
+                //add in the first player indicator if this is the first player
+                var player1Token = document.createElement('div');
+                root.appendChild(player1Token);
+                player1Token.classList.add('player1token');
+                player1Token.innerHTML = '1';
+            }
 
             var playerLeft = document.createElement('div');
             root.appendChild(playerLeft);
@@ -332,24 +345,24 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
             },
 
 
-            updateDom: function {
-            //points
-            domObject.points.innerHTML = points;
+            updateDom: function() {
+                //points
+                domObject.points.innerHTML = points;
 
-            //tokens
-            for(var i =0; i < 6; i++ ) {
-                if(tokens[i] > 0) {
-                    domObject.colors[i].tokens.innerHTML = tokens[i];
+                //tokens
+                for(var i =0; i < 6; i++ ) {
+                    if(tokens[i] > 0) {
+                        domObject.colors[i].tokens.innerHTML = tokens[i];
+                    }
+                }
+
+                //gems
+                for(var i =0; i < 5; i++ ) {
+                    if(gems[i] > 0) {
+                        domObject.colors[i].gems.innerHTML = gems[i];
+                    }
                 }
             }
-
-            //gems
-            for(var i =0; i < 5; i++ ) {
-                if(gems[i] > 0) {
-                    domObject.colors[i].gems.innerHTML = gems[i];
-                }
-            }
-        }
 
 
 
@@ -636,7 +649,8 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
          */
         var output = {};
         var decks = {};
-        var turn = Math.floor(Math.random()*numPlayers);
+        var firstPlayer = Math.floor(Math.random()*numPlayers);
+        var turn = firstPlayer;
 
         var players = [];
         var playerWrapper = document.getElementById('players-wrapper');
@@ -691,9 +705,6 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
             }
 
             players[turn].startTurn();
-
-
-
         }
 
         /*
@@ -741,7 +752,7 @@ Code from Mike Bostock @ http://bost.ocks.org/mike/shuffle/
 
         for(var i = 0; i < numPlayers; i++)
         {
-            var nextPlayer = game.Player();
+            var nextPlayer = game.Player(i, i === firstPlayer);
             players.push(nextPlayer);
 
             playerWrapper.appendChild(nextPlayer.getDom());
