@@ -10,56 +10,15 @@
     <!--[if lt IE 9]><script src="js/html5shiv-printshiv.js" media="all"></script><![endif]-->
 </head>
 <body>
-<div id="splendor-wrapper">
-    <div id="statusBar">
-        <div id="statusText">Hello!</div>
-        <div id="actionButton">End Turn [Enter]</div>
-    </div>
-    <div id="tokens">
-        <div class="token-holder">
-            <div class="token circle gold"><span id="tokens-gold"></span></div>
-        </div>
-        <div class="token-holder" data>
-            <div class="token circle white"><span id="tokens-white"></span></div>
-        </div>
-        <div class="token-holder">
-            <div class="token circle blue"><span id="tokens-blue"></span></div>
-        </div>
-        <div class="token-holder">
-            <div class="token circle green"><span id="tokens-green"></span></div>
-        </div>
-        <div class="token-holder">
-            <div class="token circle red"><span id="tokens-red"></span></div>
-        </div>
-        <div class="token-holder">
-            <div class="token circle black"><span id="tokens-black"></span></div>
-        </div>
-    </div>
+    <div id="splendor-wrapper">
 
-    <div id="market">
-        <div id="nobles"></div>
-
-        <div id="levels-wrapper">
-            <div id="level-1" class="market-level">
-                <div class="development deck"><span>1 - (<span id="level-1-decksize">20</span>)</span></div>
-            </div>
-            <div id="level-2" class="market-level">
-                <div class="development deck"><span>2 - (<span id="level-2-decksize">20</span>)</span></div>
-            </div>
-            <div id="level-3" class="market-level">
-                <div class="development deck"><span>3 - (<span id="level-3-decksize">20</span>)</span></div>
-            </div>
-        </div>
     </div>
-
-    <div id="players-wrapper">
-    </div>
-</div>
 
     <!-- Game Script -->
     <script type="text/javascript" src="js/splendor.js"></script>
     <script type="text/javascript">
-        var game = Splendor.create(4);
+        var wrapper = document.getElementById('splendor-wrapper');
+        var game = Splendor.create(wrapper, 3);
     </script>
 </body>
 </html>
